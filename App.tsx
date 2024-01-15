@@ -17,6 +17,7 @@ import { SignIn } from './src/screens/SignIn'
 
 import { Loading } from './src/components/Loading'
 import { RealmProvider } from './src/libs/realm'
+import { FavoriteMoviesProvider } from './src/context/favoriteMoviesContext'
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Inter_400Regular, Inter_700Bold })
@@ -38,7 +39,9 @@ export default function App() {
           <UserProvider fallback={SignIn}>
             <RealmProvider>
               <Layout>
-                <Home />
+                <FavoriteMoviesProvider>
+                  <Home />
+                </FavoriteMoviesProvider>
               </Layout>
             </RealmProvider>
           </UserProvider>

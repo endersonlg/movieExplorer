@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import { api } from '../../libs/axios/api'
 import { ListOfMovie } from '../../components/ListOfMovies'
 import { Container, Separator } from './styles'
 import { ScrollView, View } from 'react-native'
-import { Movie } from '../../components/MovieCard'
+
 import { Loading } from '../../components/Loading'
+import { Movie } from '../../context/favoriteMoviesContext'
 
 interface MoviesPerCategory {
   name: string
@@ -29,25 +30,62 @@ interface ResponseMovieGenre {
   }[]
 }
 
+async function loadByGenre(genre: string) {
+  const { data } = await api.get<ResponseMovie>(
+    `/discover/movie?with_genres=${genre}`,
+  )
+
+  return data.results
+}
+
+async function loadPopular() {
+  const { data } = await api.get<ResponseMovie>('/movie/popular')
+
+  return data.results
+}
+
+type ListOfCategoriesProps = {
+  moviesPerCategory: {
+    name: string
+    movies: {
+      id: string
+      title: string
+      voteAverage: number
+      img: string
+      year: number
+    }[]
+  }[]
+}
+
+// eslint-disable-next-line react/display-name
+const ListOfCategories = memo(
+  ({ moviesPerCategory }: ListOfCategoriesProps) => {
+    console.log('renderizoouuuu')
+
+    return (
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {moviesPerCategory.map((moviesCategory, index) => (
+          <View key={moviesCategory.name}>
+            <ListOfMovie
+              movies={moviesCategory.movies}
+              title={moviesCategory.name}
+            />
+            {index !== moviesPerCategory.length - 1 && <Separator />}
+          </View>
+        ))}
+      </ScrollView>
+    )
+  },
+  (prevProps, nextProps) =>
+    JSON.stringify(prevProps.moviesPerCategory) ===
+    JSON.stringify(nextProps.moviesPerCategory),
+)
+
 export function Home() {
   const [moviesPerCategory, setMoviesPerCategory] = useState<
     MoviesPerCategory[]
   >([])
   const [isLoading, setIsLoading] = useState(true)
-
-  async function loadByGenre(genre: string) {
-    const { data } = await api.get<ResponseMovie>(
-      `/discover/movie?with_genres=${genre}`,
-    )
-
-    return data.results
-  }
-
-  async function loadPopular() {
-    const { data } = await api.get<ResponseMovie>('/movie/popular')
-
-    return data.results
-  }
 
   useEffect(() => {
     async function load() {
@@ -76,7 +114,7 @@ export function Home() {
           })),
         }))
 
-        setMoviesPerCategory(moviesPerCategory)
+        setMoviesPerCategory(moviesPerCategory.slice(0, 5))
       } catch (err) {
         console.log(err)
       } finally {
@@ -91,19 +129,11 @@ export function Home() {
     return <Loading />
   }
 
+  console.log('home')
+
   return (
     <Container>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {moviesPerCategory.map((moviesCategory, index) => (
-          <View key={moviesCategory.name}>
-            <ListOfMovie
-              movies={moviesCategory.movies}
-              title={moviesCategory.name}
-            />
-            {index !== moviesPerCategory.length - 1 && <Separator />}
-          </View>
-        ))}
-      </ScrollView>
+      <ListOfCategories moviesPerCategory={moviesPerCategory} />
     </Container>
   )
 }
