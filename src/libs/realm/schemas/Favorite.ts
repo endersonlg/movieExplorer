@@ -5,9 +5,10 @@ type GenerateProps = {
   user_id: string
   movie_id: string
   title: string
+  overview: string
   vote_average: number
   img: string
-  year: number
+  release_date: string
 }
 
 // eslint-disable-next-line no-use-before-define
@@ -16,9 +17,10 @@ export class Favorite extends Realm.Object<Favorite> {
   user_id!: string
   movie_id!: string
   title!: string
+  overview!: string
   vote_average!: number
   img!: string
-  year!: number
+  release_date!: string
   created_at!: Date
   updated_at!: Date
 
@@ -26,18 +28,20 @@ export class Favorite extends Realm.Object<Favorite> {
     movie_id,
     user_id,
     title,
+    overview,
     img,
     vote_average,
-    year,
+    release_date,
   }: GenerateProps) {
     console.log({
       _id: new Realm.BSON.UUID(),
       movie_id,
       user_id,
       title,
+      overview,
       img,
       vote_average,
-      year,
+      release_date,
       created_at: new Date(),
       updated_at: new Date(),
     })
@@ -47,9 +51,10 @@ export class Favorite extends Realm.Object<Favorite> {
       movie_id,
       user_id,
       title,
+      overview,
       img,
       vote_average,
-      year,
+      release_date,
       created_at: new Date(),
       updated_at: new Date(),
     }
@@ -70,9 +75,10 @@ export class Favorite extends Realm.Object<Favorite> {
         indexed: true,
       },
       title: 'string',
+      overview: 'string',
       img: 'string',
       vote_average: 'float',
-      year: 'int',
+      release_date: 'string',
     },
   }
 }

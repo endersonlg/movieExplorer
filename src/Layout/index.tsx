@@ -9,6 +9,8 @@ type Props = {
 export function Layout({ children }: Props) {
   const insets = useSafeAreaInsets()
 
+  console.log('ola renderizou')
+
   const paddingTop = insets.top + 16
 
   return <Container style={{ paddingTop }}>{children}</Container>

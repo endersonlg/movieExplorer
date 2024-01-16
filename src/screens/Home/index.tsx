@@ -1,11 +1,12 @@
-import { memo, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { api } from '../../libs/axios/api'
 import { ListOfMovie } from '../../components/ListOfMovies'
-import { Container, Separator } from './styles'
-import { ScrollView, View } from 'react-native'
+import { Container } from './styles'
+import { FlatList, useWindowDimensions } from 'react-native'
 
 import { Loading } from '../../components/Loading'
 import { Movie } from '../../context/favoriteMoviesContext'
+import { Separator } from '../../components/Separator'
 
 interface MoviesPerCategory {
   name: string
@@ -20,6 +21,7 @@ interface ResponseMovie {
     vote_average: number
     poster_path: string
     release_date: string
+    overview: string
   }[]
 }
 
@@ -44,48 +46,13 @@ async function loadPopular() {
   return data.results
 }
 
-type ListOfCategoriesProps = {
-  moviesPerCategory: {
-    name: string
-    movies: {
-      id: string
-      title: string
-      voteAverage: number
-      img: string
-      year: number
-    }[]
-  }[]
-}
-
-// eslint-disable-next-line react/display-name
-const ListOfCategories = memo(
-  ({ moviesPerCategory }: ListOfCategoriesProps) => {
-    console.log('renderizoouuuu')
-
-    return (
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {moviesPerCategory.map((moviesCategory, index) => (
-          <View key={moviesCategory.name}>
-            <ListOfMovie
-              movies={moviesCategory.movies}
-              title={moviesCategory.name}
-            />
-            {index !== moviesPerCategory.length - 1 && <Separator />}
-          </View>
-        ))}
-      </ScrollView>
-    )
-  },
-  (prevProps, nextProps) =>
-    JSON.stringify(prevProps.moviesPerCategory) ===
-    JSON.stringify(nextProps.moviesPerCategory),
-)
-
 export function Home() {
   const [moviesPerCategory, setMoviesPerCategory] = useState<
     MoviesPerCategory[]
   >([])
   const [isLoading, setIsLoading] = useState(true)
+
+  const { height } = useWindowDimensions()
 
   useEffect(() => {
     async function load() {
@@ -110,11 +77,12 @@ export function Home() {
             title: movie.title,
             voteAverage: movie.vote_average,
             img: `https://www.themoviedb.org/t/p/w220_and_h330_face/${movie.poster_path}`,
-            year: new Date(movie.release_date).getFullYear(),
+            releaseDate: movie.release_date,
+            overview: movie.overview,
           })),
         }))
 
-        setMoviesPerCategory(moviesPerCategory.slice(0, 5))
+        setMoviesPerCategory(moviesPerCategory)
       } catch (err) {
         console.log(err)
       } finally {
@@ -129,11 +97,20 @@ export function Home() {
     return <Loading />
   }
 
-  console.log('home')
+  const windowSize = Math.ceil(height / 300)
 
   return (
     <Container>
-      <ListOfCategories moviesPerCategory={moviesPerCategory} />
+      <FlatList
+        data={moviesPerCategory}
+        ItemSeparatorComponent={() => <Separator />}
+        renderItem={({ item }) => (
+          <ListOfMovie movies={item.movies} title={item.name} key={item.name} />
+        )}
+        initialNumToRender={windowSize}
+        windowSize={windowSize}
+        maxToRenderPerBatch={windowSize}
+      />
     </Container>
   )
 }

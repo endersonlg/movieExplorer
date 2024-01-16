@@ -17,4 +17,5 @@ import { Favorite } from './schemas/Favorite'
 export const { RealmProvider, useRealm, useQuery, useObject } =
   createRealmContext({
     schema: [Favorite],
+    schemaVersion: 2,
   })

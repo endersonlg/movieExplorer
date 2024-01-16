@@ -10,14 +10,12 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import theme from './src/theme'
 import { REALM_APP_ID } from '@env'
 
-import { Layout } from './src/Layout'
-
-import { Home } from './src/screens/Home'
 import { SignIn } from './src/screens/SignIn'
 
 import { Loading } from './src/components/Loading'
 import { RealmProvider } from './src/libs/realm'
 import { FavoriteMoviesProvider } from './src/context/favoriteMoviesContext'
+import { Routes } from './src/routes'
 
 export default function App() {
   const [fontsLoaded] = useFonts({ Inter_400Regular, Inter_700Bold })
@@ -35,14 +33,11 @@ export default function App() {
             backgroundColor={'transparent'}
             translucent
           />
-
           <UserProvider fallback={SignIn}>
             <RealmProvider>
-              <Layout>
-                <FavoriteMoviesProvider>
-                  <Home />
-                </FavoriteMoviesProvider>
-              </Layout>
+              <FavoriteMoviesProvider>
+                <Routes />
+              </FavoriteMoviesProvider>
             </RealmProvider>
           </UserProvider>
         </SafeAreaProvider>

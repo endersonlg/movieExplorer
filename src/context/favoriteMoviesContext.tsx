@@ -1,11 +1,15 @@
 import { ReactNode, createContext, useState } from 'react'
+import { useRealm } from '../libs/realm'
+import { Favorite } from '../libs/realm/schemas/Favorite'
+import { useUser } from '@realm/react'
 
 export type Movie = {
   id: string
   title: string
   voteAverage: number
   img: string
-  year: number
+  releaseDate: string
+  overview: string
 }
 
 type FavoriteMoviesContextValues = {
@@ -27,8 +31,30 @@ export const FavoriteMoviesProvider = ({
 }: FavoriteMoviesProviderProps) => {
   const [favoriteMovies, setFavoriteMovies] = useState<Movie[]>([])
 
-  function addFavorite(movie: Movie) {
-    setFavoriteMovies((state) => [...state, movie])
+  const realm = useRealm()
+
+  const user = useUser()
+
+  async function addFavorite(movie: Movie) {
+    try {
+      realm.write(() => {
+        realm.create(
+          'Favorite',
+          Favorite.generate({
+            user_id: user.id,
+            movie_id: movie.id,
+            title: movie.title,
+            overview: movie.overview,
+            img: movie.img,
+            vote_average: movie.voteAverage,
+            release_date: movie.releaseDate,
+          }),
+        )
+      })
+      setFavoriteMovies((state) => [...state, movie])
+    } catch (e) {
+      console.log(e)
+    }
   }
 
   function removeFavorite(movie: Movie) {

@@ -1,15 +1,7 @@
 import styled from 'styled-components/native'
 
 export const Container = styled.View`
-  position: relative;
   width: 128px;
-`
-
-export const Poster = styled.Image`
-  height: 160px;
-  width: 100%;
-
-  border-radius: 6px;
 `
 
 export const Title = styled.Text`
@@ -26,11 +18,4 @@ export const Year = styled.Text`
   font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
 
   text-align: center;
-`
-
-export const FavoriteTouch = styled.TouchableOpacity`
-  position: absolute;
-
-  top: 2px;
-  right: 2px;
 `

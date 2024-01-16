@@ -17,6 +17,6 @@ export const Title = styled.Text`
   border-bottom-color: ${({ theme }) => theme.COLORS.RED_600};
 `
 
-export const Separator = styled.View`
+export const GapItem = styled.View`
   margin: 0 8px;
 `
