@@ -5,8 +5,11 @@ import { Container } from './styles'
 import { FlatList, useWindowDimensions } from 'react-native'
 
 import { Loading } from '../../components/Loading'
-import { Movie } from '../../context/favoriteMoviesContext'
+
 import { Separator } from '../../components/Separator'
+import { Movie } from '../../@types/movie'
+import { useRealm } from '../../libs/realm'
+import { useUser } from '@realm/react'
 
 interface MoviesPerCategory {
   name: string
@@ -50,18 +53,30 @@ export function Home() {
   const [moviesPerCategory, setMoviesPerCategory] = useState<
     MoviesPerCategory[]
   >([])
+
   const [isLoading, setIsLoading] = useState(true)
 
+  const realm = useRealm()
+  const user = useUser()
+
   const { height } = useWindowDimensions()
+
+  useEffect(() => {
+    realm.subscriptions.update((mutableSubs, realm) => {
+      const favoritesByUser = realm
+        .objects('Favorite')
+        .filtered(`user_id = '${user.id}'`)
+
+      mutableSubs.add(favoritesByUser, { name: 'favorite_by_user' })
+    })
+  }, [realm])
 
   useEffect(() => {
     async function load() {
       try {
         const {
           data: { genres },
-        } = await api.get<ResponseMovieGenre>(
-          '/genre/movie/list?language=pt-BR',
-        )
+        } = await api.get<ResponseMovieGenre>('/genre/movie/list')
 
         const responses = await Promise.all([
           loadPopular(),
@@ -105,7 +120,7 @@ export function Home() {
         data={moviesPerCategory}
         ItemSeparatorComponent={() => <Separator />}
         renderItem={({ item }) => (
-          <ListOfMovie movies={item.movies} title={item.name} key={item.name} />
+          <ListOfMovie movies={item.movies} title={item.name} />
         )}
         initialNumToRender={windowSize}
         windowSize={windowSize}

@@ -6,8 +6,9 @@ import {
   ReleaseDate,
   Title,
 } from './styles'
-import { Movie } from '../../context/favoriteMoviesContext'
+
 import { Poster } from '../Poster'
+import { Movie } from '../../@types/movie'
 
 type FavoriteMovieCardProps = {
   movie: Movie
@@ -16,6 +17,7 @@ type FavoriteMovieCardProps = {
 
 export function FavoriteMovieCard({
   movie,
+
   onHeartTouch,
 }: FavoriteMovieCardProps) {
   function handleHeartTouch() {
@@ -25,6 +27,10 @@ export function FavoriteMovieCard({
   const dateFormatted = dayjs(new Date(movie.releaseDate)).format(
     'MMMM DD, YYYY',
   )
+
+  if (movie.voteAverage?.toFixed(1) === undefined) {
+    console.log(movie.title)
+  }
 
   return (
     <Container>

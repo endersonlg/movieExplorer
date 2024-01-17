@@ -5,5 +5,5 @@ export const Separator = styled.View`
   width: 100%;
   background-color: ${({ theme }) => theme.COLORS.DARK_100};
 
-  margin: 4px 0;
+  margin: 16px 0;
 `

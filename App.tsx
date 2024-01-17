@@ -13,8 +13,8 @@ import { REALM_APP_ID } from '@env'
 import { SignIn } from './src/screens/SignIn'
 
 import { Loading } from './src/components/Loading'
-import { RealmProvider } from './src/libs/realm'
-import { FavoriteMoviesProvider } from './src/context/favoriteMoviesContext'
+import { RealmProvider, syncConfig } from './src/libs/realm'
+
 import { Routes } from './src/routes'
 
 export default function App() {
@@ -34,10 +34,8 @@ export default function App() {
             translucent
           />
           <UserProvider fallback={SignIn}>
-            <RealmProvider>
-              <FavoriteMoviesProvider>
-                <Routes />
-              </FavoriteMoviesProvider>
+            <RealmProvider sync={syncConfig} fallback={Loading}>
+              <Routes />
             </RealmProvider>
           </UserProvider>
         </SafeAreaProvider>

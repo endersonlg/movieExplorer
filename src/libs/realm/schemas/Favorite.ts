@@ -79,6 +79,8 @@ export class Favorite extends Realm.Object<Favorite> {
       img: 'string',
       vote_average: 'float',
       release_date: 'string',
+      created_at: 'date',
+      updated_at: 'date',
     },
   }
 }
